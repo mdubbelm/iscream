@@ -23,13 +23,26 @@ export default function IjsJournal() {
   const [newFl, setNewFl] = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const [wishInput, setWishInput] = useState('');
-  // Check if should show install banner (computed initial state)
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isIOS] = useState(() => /iPad|iPhone|iPod/.test(navigator.userAgent));
+  const [isStandalone] = useState(() =>
+    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  );
   const [showInstallBanner, setShowInstallBanner] = useState(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                         window.navigator.standalone === true;
     const dismissed = localStorage.getItem('installBannerDismissed');
-    return !isStandalone && !dismissed;
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    return !standalone && !dismissed;
   });
+
+  // Capture the install prompt event (Android/Chrome)
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   // Load data on mount
   useEffect(() => {
@@ -158,6 +171,17 @@ export default function IjsJournal() {
     setShowInstallBanner(false);
   };
 
+  // Trigger native install prompt (Android/Chrome)
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBanner(false);
+      setInstallPrompt(null);
+    }
+  };
+
   // Styles
   const s = {
     app: { maxWidth: 500, margin: '0 auto', paddingBottom: 100, minHeight: '100vh', background: 'linear-gradient(180deg,#fef6f9,#fdf4eb,#f0fafa)', fontFamily: 'system-ui, sans-serif' },
@@ -220,17 +244,26 @@ export default function IjsJournal() {
       )}
 
       {/* Install Banner */}
-      {showInstallBanner && (
+      {showInstallBanner && !isStandalone && (
         <div style={{background:'linear-gradient(135deg,#E8F5E9,#E3F2FD)',padding:16,margin:12,borderRadius:16,fontSize:14}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
             <span style={{fontSize:20}}>📲</span>
             <button onClick={dismissInstallBanner} style={{background:'none',border:'none',fontSize:18,cursor:'pointer',padding:0,opacity:0.5}}>×</button>
           </div>
           <p style={{margin:'0 0 8px',fontWeight:600}}>Zet IJsJournal op je startscherm</p>
-          <p style={{margin:0,color:'#666',fontSize:13,lineHeight:1.4}}>
-            <b>Android:</b> Menu (⋮) → Toevoegen aan startscherm<br/>
-            <b>iPhone:</b> Deel (↗) → Zet op beginscherm
-          </p>
+          {installPrompt ? (
+            <button onClick={handleInstallClick} style={{...s.btn,...s.btnPrimary,width:'100%',marginTop:8}}>
+              Installeer app
+            </button>
+          ) : (
+            <p style={{margin:0,color:'#666',fontSize:13,lineHeight:1.4}}>
+              {isIOS ? (
+                <>Tik op <b>Deel</b> (↗) → <b>Zet op beginscherm</b></>
+              ) : (
+                <>Tik op <b>Menu</b> (⋮) → <b>Toevoegen aan startscherm</b></>
+              )}
+            </p>
+          )}
         </div>
       )}
 
