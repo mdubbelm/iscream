@@ -7,9 +7,9 @@ const BADGES = [
   { id: 'triple', name: 'Hattrick', icon: '🎯', desc: '3 check-ins', need: d => d.checkins.length >= 3 },
   { id: 'ten', name: 'Liefhebber', icon: '💕', desc: '10 check-ins', need: d => d.checkins.length >= 10 },
   { id: 'summer', name: 'Zomerliefde', icon: '☀️', desc: '20 check-ins', need: d => d.checkins.length >= 20 },
-  { id: 'explorer', name: 'Ontdekker', icon: '🗺️', desc: '5 ijszaken bezocht', need: d => new Set(d.checkins.map(c=>c.sid)).size >= 5 },
+  { id: 'explorer', name: 'Ontdekker', icon: '🗺️', desc: '5 IJszaken bezocht', need: d => new Set(d.checkins.map(c=>c.sid)).size >= 5 },
   { id: 'taster', name: 'Proever', icon: '👅', desc: '10 smaken geprobeerd', need: d => new Set(d.checkins.flatMap(c=>c.fl)).size >= 10 },
-  { id: 'vegan', name: 'Plantaardig', icon: '🌱', desc: '5 vegan ijsjes', need: d => d.checkins.filter(c=>c.vg).length >= 5 },
+  { id: 'vegan', name: 'Plantaardig', icon: '🌱', desc: '5 vegan IJsjes', need: d => d.checkins.filter(c=>c.vg).length >= 5 },
   { id: 'fan', name: 'Superfan', icon: '⭐', desc: 'Geef een 5-ster rating', need: d => d.checkins.some(c=>c.rt===5) },
 ];
 
@@ -23,6 +23,13 @@ export default function IjsJournal() {
   const [newFl, setNewFl] = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const [wishInput, setWishInput] = useState('');
+  // Check if should show install banner (computed initial state)
+  const [showInstallBanner, setShowInstallBanner] = useState(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+    const dismissed = localStorage.getItem('installBannerDismissed');
+    return !isStandalone && !dismissed;
+  });
 
   // Load data on mount
   useEffect(() => {
@@ -37,7 +44,7 @@ export default function IjsJournal() {
           const stored = localStorage.getItem('ijsjournal');
           if (stored) setData(JSON.parse(stored));
         }
-      } catch(e) {
+      } catch {
         console.log('Starting fresh');
       }
       setLoading(false);
@@ -114,6 +121,43 @@ export default function IjsJournal() {
   
   const delWish = f => save({ ...data, wish: data.wish.filter(x => x !== f) });
 
+  // Export data as JSON
+  const exportData = () => {
+    const exportObj = {
+      shops: data.shops,
+      checkins: data.checkins,
+      wish: data.wish,
+      xfl: data.xfl,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ijsjournal-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Force update (clear cache and reload)
+  const forceUpdate = async () => {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(reg => reg.unregister()));
+    }
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map(name => caches.delete(name)));
+    window.location.reload(true);
+  };
+
+  // Dismiss install banner
+  const dismissInstallBanner = () => {
+    localStorage.setItem('installBannerDismissed', 'true');
+    setShowInstallBanner(false);
+  };
+
   // Styles
   const s = {
     app: { maxWidth: 500, margin: '0 auto', paddingBottom: 100, minHeight: '100vh', background: 'linear-gradient(180deg,#fef6f9,#fdf4eb,#f0fafa)', fontFamily: 'system-ui, sans-serif' },
@@ -175,14 +219,29 @@ export default function IjsJournal() {
         </div>
       )}
 
+      {/* Install Banner */}
+      {showInstallBanner && (
+        <div style={{background:'linear-gradient(135deg,#E8F5E9,#E3F2FD)',padding:16,margin:12,borderRadius:16,fontSize:14}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+            <span style={{fontSize:20}}>📲</span>
+            <button onClick={dismissInstallBanner} style={{background:'none',border:'none',fontSize:18,cursor:'pointer',padding:0,opacity:0.5}}>×</button>
+          </div>
+          <p style={{margin:'0 0 8px',fontWeight:600}}>Zet IJsJournal op je startscherm</p>
+          <p style={{margin:0,color:'#666',fontSize:13,lineHeight:1.4}}>
+            <b>Android:</b> Menu (⋮) → Toevoegen aan startscherm<br/>
+            <b>iPhone:</b> Deel (↗) → Zet op beginscherm
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <header style={s.header}>
-        <h1 style={s.logo}>🍦 IjsJournal</h1>
+        <h1 style={s.logo}>🍦 IJsJournal</h1>
       </header>
 
       {/* Navigation */}
       <nav style={s.nav}>
-        {[['home','🏠'],['checkin','➕'],['history','📖'],['shops','🏪'],['wish','⭐'],['badges','🏆']].map(([v,i])=>(
+        {[['home','🏠'],['checkin','➕'],['history','📖'],['shops','🏪'],['wish','⭐'],['badges','🏆'],['settings','⚙️']].map(([v,i])=>(
           <button key={v} onClick={()=>setView(v)} style={{...s.navBtn,...(view===v?s.navActive:{})}}>{i}</button>
         ))}
       </nav>
@@ -194,7 +253,7 @@ export default function IjsJournal() {
         {view==='home' && (
           <div>
             <div style={s.statGrid}>
-              {[['Check-ins',data.checkins.length],['Zaken',new Set(data.checkins.map(c=>c.sid)).size],['Smaken',new Set(data.checkins.flatMap(c=>c.fl)).size]].map(([l,n])=>(
+              {[['Check-ins',data.checkins.length],['IJszaken',new Set(data.checkins.map(c=>c.sid)).size],['Smaken',new Set(data.checkins.flatMap(c=>c.fl)).size]].map(([l,n])=>(
                 <div key={l} style={s.statBox}>
                   <span style={s.statNum}>{n}</span>
                   <span style={s.statLabel}>{l}</span>
@@ -402,6 +461,50 @@ export default function IjsJournal() {
                   <div style={{fontSize:11,color:'#888',marginTop:2}}>{b.desc}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* SETTINGS VIEW */}
+        {view==='settings' && (
+          <div>
+            <h2 style={s.title}>Instellingen</h2>
+
+            <div style={s.card}>
+              <h3 style={{margin:'0 0 12px',fontSize:15}}>📦 Data</h3>
+              <p style={{color:'#666',fontSize:13,margin:'0 0 12px'}}>
+                Exporteer je data als backup of om over te zetten naar een ander apparaat.
+              </p>
+              <button onClick={exportData} style={{...s.btn,...s.btnPrimary,width:'100%'}}>
+                Exporteer data (JSON)
+              </button>
+            </div>
+
+            <div style={s.card}>
+              <h3 style={{margin:'0 0 12px',fontSize:15}}>🔄 App updaten</h3>
+              <p style={{color:'#666',fontSize:13,margin:'0 0 12px'}}>
+                Werkt de app niet goed? Forceer een update om de nieuwste versie te laden.
+              </p>
+              <button onClick={forceUpdate} style={{...s.btn,...s.btnGray,width:'100%'}}>
+                Forceer update
+              </button>
+            </div>
+
+            <div style={s.card}>
+              <h3 style={{margin:'0 0 12px',fontSize:15}}>📊 Statistieken</h3>
+              <div style={{fontSize:13,color:'#666'}}>
+                <p style={{margin:'4px 0'}}>Check-ins: <b>{data.checkins.length}</b></p>
+                <p style={{margin:'4px 0'}}>IJszaken: <b>{data.shops.length}</b></p>
+                <p style={{margin:'4px 0'}}>Smaken geprobeerd: <b>{new Set(data.checkins.flatMap(c=>c.fl)).size}</b></p>
+                <p style={{margin:'4px 0'}}>Eigen smaken: <b>{data.xfl.length}</b></p>
+                <p style={{margin:'4px 0'}}>Wishlist: <b>{data.wish.length}</b></p>
+                <p style={{margin:'4px 0'}}>Badges verdiend: <b>{earned.length}/{BADGES.length}</b></p>
+              </div>
+            </div>
+
+            <div style={{textAlign:'center',padding:20,color:'#999',fontSize:12}}>
+              <p>IJsJournal v1.0.0</p>
+              <p style={{marginTop:4}}>Made with 🍦 by @mdubbelm</p>
             </div>
           </div>
         )}
