@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/*.png'],
       manifest: {
-        name: 'IjsJournal',
-        short_name: 'IjsJournal',
+        name: 'IJsJournal - Track je ijsjes',
+        short_name: 'iScream',
         description: 'Track ijssmaken die je hebt geprobeerd',
         theme_color: '#FFB5C5',
         background_color: '#fef6f9',
