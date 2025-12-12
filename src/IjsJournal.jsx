@@ -269,7 +269,8 @@ export default function IjsJournal() {
 
       {/* Header */}
       <header style={s.header}>
-        <h1 style={s.logo}>🍦 IJsJournal</h1>
+        <h1 style={s.logo}>I scream for Icecream</h1>
+        <p style={{margin:'4px 0 0',color:'rgba(255,255,255,0.9)',fontSize:14}}>Onthoud elk ijsje 🍦</p>
       </header>
 
       {/* Navigation */}
