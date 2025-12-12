@@ -195,15 +195,15 @@ export default function IjsJournal() {
     statGrid: { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 },
     statBox: { background: '#fff', borderRadius: 12, padding: 12, textAlign: 'center' },
     statNum: { display: 'block', fontSize: 24, fontWeight: 700, color: '#FF8BA7' },
-    statLabel: { fontSize: 10, color: '#999', textTransform: 'uppercase' },
+    statLabel: { fontSize: 11, color: '#666', textTransform: 'uppercase' },
     title: { fontSize: 20, fontWeight: 700, marginBottom: 16 },
-    label: { display: 'block', fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase', marginBottom: 8 },
+    label: { display: 'block', fontSize: 12, fontWeight: 600, color: '#555', textTransform: 'uppercase', marginBottom: 8 },
     input: { width: '100%', padding: 12, border: '2px solid #eee', borderRadius: 12, fontSize: 16, boxSizing: 'border-box', marginBottom: 8 },
     btn: { border: 'none', borderRadius: 12, padding: '12px 20px', fontWeight: 600, cursor: 'pointer' },
     btnPrimary: { background: 'linear-gradient(135deg,#FFB5C5,#FFC09F)', color: '#fff' },
     btnDanger: { background: '#ef4444', color: '#fff' },
     btnGray: { background: '#f3f4f6', color: '#666' },
-    tag: { display: 'inline-block', background: '#FFE5EC', color: '#E8A4B8', padding: '4px 10px', borderRadius: 20, fontSize: 12, marginRight: 4, marginBottom: 4 },
+    tag: { display: 'inline-block', background: '#FFE5EC', color: '#9B4D6A', padding: '4px 10px', borderRadius: 20, fontSize: 12, marginRight: 4, marginBottom: 4 },
     flavorBtn: { border: '2px solid #eee', background: '#fff', borderRadius: 20, padding: '6px 12px', fontSize: 14, marginRight: 4, marginBottom: 4, cursor: 'pointer' },
     flavorActive: { borderColor: '#FFB5C5', background: '#FFF5F7' },
     shopBtn: { border: '2px solid #eee', background: '#fff', borderRadius: 12, padding: 12, textAlign: 'left', cursor: 'pointer', marginBottom: 8 },
@@ -218,7 +218,7 @@ export default function IjsJournal() {
   // Loading state
   if (loading) {
     return (
-      <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontSize:60}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontSize:60}} role="status" aria-label="App wordt geladen">
         🍦
       </div>
     );
@@ -248,7 +248,7 @@ export default function IjsJournal() {
         <div style={{background:'linear-gradient(135deg,#E8F5E9,#E3F2FD)',padding:16,margin:12,borderRadius:16,fontSize:14}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
             <span style={{fontSize:20}}>📲</span>
-            <button onClick={dismissInstallBanner} style={{background:'none',border:'none',fontSize:18,cursor:'pointer',padding:0,opacity:0.5}}>×</button>
+            <button onClick={dismissInstallBanner} style={{background:'none',border:'none',fontSize:18,cursor:'pointer',padding:0,opacity:0.5}} aria-label="Sluit banner">×</button>
           </div>
           <p style={{margin:'0 0 8px',fontWeight:600}}>Zet IJsJournal op je startscherm</p>
           {installPrompt ? (
@@ -274,9 +274,9 @@ export default function IjsJournal() {
       </header>
 
       {/* Navigation */}
-      <nav style={s.nav}>
-        {[['home','🏠'],['checkin','➕'],['history','📖'],['shops','🏪'],['wish','⭐'],['badges','🏆'],['settings','⚙️']].map(([v,i])=>(
-          <button key={v} onClick={()=>setView(v)} style={{...s.navBtn,...(view===v?s.navActive:{})}}>{i}</button>
+      <nav style={s.nav} aria-label="Hoofdnavigatie">
+        {[['home','🏠','Home'],['checkin','➕','Check-in'],['history','📖','Logboek'],['shops','🏪','IJszaken'],['wish','⭐','Wishlist'],['badges','🏆','Badges'],['settings','⚙️','Instellingen']].map(([v,i,label])=>(
+          <button key={v} onClick={()=>setView(v)} style={{...s.navBtn,...(view===v?s.navActive:{})}} aria-label={label} aria-current={view===v?'page':undefined}>{i}</button>
         ))}
       </nav>
 
@@ -371,10 +371,10 @@ export default function IjsJournal() {
             </div>
 
             <div style={{marginBottom:20}}>
-              <label style={s.label}>Rating</label>
-              <div style={{display:'flex',gap:4,justifyContent:'center'}}>
+              <label style={s.label} id="rating-label">Rating</label>
+              <div style={{display:'flex',gap:4,justifyContent:'center'}} role="group" aria-labelledby="rating-label">
                 {[1,2,3,4,5].map(n=>(
-                  <button key={n} onClick={()=>setForm({...form,rt:n})} style={{background:'none',border:'none',fontSize:32,cursor:'pointer'}}>{n<=form.rt?'🍨':'⚪'}</button>
+                  <button key={n} onClick={()=>setForm({...form,rt:n})} style={{background:'none',border:'none',fontSize:32,cursor:'pointer'}} aria-label={`${n} van 5 bolletjes`} aria-pressed={n<=form.rt}>{n<=form.rt?'🍨':'⚪'}</button>
                 ))}
               </div>
             </div>
@@ -410,7 +410,7 @@ export default function IjsJournal() {
                       <b style={{fontSize:17}}>{c.snm}</b>{shop?.ct && <span style={{color:'#999'}}> · {shop.ct}</span>}
                       <span style={{display:'block',fontSize:13,color:'#888'}}>{fmtDate(c.dt)}</span>
                     </div>
-                    <button onClick={()=>setDeleteId(c.id)} style={{background:'none',border:'none',fontSize:20,opacity:0.4,cursor:'pointer',padding:4}}>🗑️</button>
+                    <button onClick={()=>setDeleteId(c.id)} style={{background:'none',border:'none',fontSize:20,opacity:0.4,cursor:'pointer',padding:4}} aria-label={`Verwijder check-in bij ${c.snm}`}>🗑️</button>
                   </div>
                   <div style={{marginBottom:6}}>{c.fl.map(f=><span key={f} style={s.tag}>{f}</span>)}{c.vg && <span>🌱</span>}</div>
                   <div style={{fontSize:18}}>{'🍨'.repeat(c.rt)}{'⚪'.repeat(5-c.rt)}</div>
