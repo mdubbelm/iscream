@@ -1,18 +1,19 @@
-# IjsJournal 🍦
+# IjsJournal
 
 Een "Untappd voor ijs" app - houd bij welke smaken je bij welke ijszaak hebt gegeten en hoe je ze vond.
 
+**Live app:** https://mdubbelm.github.io/iscream
+
 ## Features
 
-- ✅ **Check-ins**: Log je ijsbezoek met datum, ijszaak, smaken, rating en notities
-- ✅ **IJszaken beheer**: Voeg ijszaken toe met naam en stad
-- ✅ **Smaken**: 16 voorgedefinieerde smaken + eigen smaken toevoegen
-- ✅ **Ratings**: 1-5 ijsbolletjes rating systeem
-- ✅ **Vegan tag**: Markeer vegan ijsjes
-- ✅ **Wishlist**: Smaken die je nog wilt proberen
-- ✅ **Badges**: 8 badges om te verdienen
-- ✅ **Statistieken**: Aantal check-ins, bezochte zaken, geprobeerde smaken
-- ✅ **Verwijder beveiliging**: Bevestigingsdialoog bij verwijderen
+- **Check-ins**: Log je ijsbezoek met datum, ijszaak, smaken, rating en notities
+- **IJszaken beheer**: Voeg ijszaken toe met naam en stad
+- **Smaken**: 16 voorgedefinieerde smaken + eigen smaken toevoegen
+- **Ratings**: 1-5 ijsbolletjes rating systeem
+- **Vegan tag**: Markeer vegan ijsjes
+- **Wishlist**: Smaken die je nog wilt proberen
+- **Badges**: 8 badges om te verdienen
+- **Statistieken**: Aantal check-ins, bezochte zaken, geprobeerde smaken
 
 ## Badges
 
@@ -27,78 +28,38 @@ Een "Untappd voor ijs" app - houd bij welke smaken je bij welke ijszaak hebt geg
 | 🌱 | Plantaardig | 5 vegan ijsjes |
 | ⭐ | Superfan | Geef een 5-ster rating |
 
-## Technische details
+## Installeren als app
 
-- **Framework**: React (single component)
-- **Styling**: Inline styles (geen externe CSS dependencies)
-- **Storage**: localStorage (of window.storage voor Claude artifacts)
-- **State management**: React useState/useEffect
+### Android
+1. Open https://mdubbelm.github.io/iscream in Chrome
+2. Tik op het menu (drie puntjes)
+3. Kies "Toevoegen aan startscherm"
 
-## Gebruik in een nieuw project
+### iOS
+1. Open https://mdubbelm.github.io/iscream in Safari
+2. Tik op het deel-icoon
+3. Kies "Zet op beginscherm"
 
-### Optie 1: Create React App
-
-```bash
-npx create-react-app ijsjournal
-cd ijsjournal
-# Vervang src/App.js met IjsJournal.jsx content
-npm start
-```
-
-### Optie 2: Vite
+## Development
 
 ```bash
-npm create vite@latest ijsjournal -- --template react
-cd ijsjournal
-# Vervang src/App.jsx met IjsJournal.jsx content
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-### Optie 3: Next.js
+## Tech Stack
 
-```bash
-npx create-next-app@latest ijsjournal
-cd ijsjournal
-# Maak pages/index.js of app/page.js met IjsJournal component
-npm run dev
-```
-
-## Data structuur
-
-```javascript
-{
-  shops: [
-    { id: "123", nm: "Luciano", ct: "Amsterdam" }
-  ],
-  checkins: [
-    { 
-      id: "456", 
-      sid: "123",        // shop id
-      snm: "Luciano",    // shop name (denormalized)
-      fl: ["Pistache", "Stracciatella"],  // flavors
-      rt: 5,             // rating 1-5
-      nt: "Heerlijk!",   // notes
-      vg: false,         // vegan
-      dt: "2024-07-15"   // date
-    }
-  ],
-  wish: ["Mango", "Kokos"],  // wishlist flavors
-  xfl: ["Bacio", "Fior di latte"]  // custom flavors
-}
-```
-
-## Mogelijke uitbreidingen
-
-- [ ] Foto's bij check-ins
-- [ ] Kaartweergave van bezochte ijszaken
-- [ ] Export naar JSON/CSV
-- [ ] Delen op social media
-- [ ] Seizoens-smaken tracking
-- [ ] Prijs per bol bijhouden
-- [ ] Meerdere gebruikers/sync
-- [ ] PWA voor offline gebruik
+- React 19
+- Vite 7
+- PWA (vite-plugin-pwa)
+- localStorage voor data opslag
 
 ## Licentie
 
-MIT - Vrij te gebruiken en aan te passen
+MIT
