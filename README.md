@@ -1,16 +1,16 @@
 # IJsJournal
 
-Een "Untappd voor IJs" app - houd bij welke smaken je bij welke IJszaak hebt gegeten en hoe je ze vond.
+Een "Untappd voor ijs" app - houd bij welke smaken je bij welke ijszaak hebt gegeten en hoe je ze vond.
 
 **Live app:** https://mdubbelm.github.io/iscream
 
 ## Features
 
-- **Check-ins**: Log je IJsbezoek met datum, IJszaak, smaken, rating en notities
-- **IJszaken beheer**: Voeg IJszaken toe met naam en stad
+- **Check-ins**: Log je ijsbezoek met datum, ijszaak, smaken, rating en notities
+- **IJszaken beheer**: Voeg ijszaken toe met naam en stad
 - **Smaken**: 16 voorgedefinieerde smaken + eigen smaken toevoegen
-- **Ratings**: 1-5 IJsbolletjes rating systeem
-- **Vegan tag**: Markeer vegan IJsjes
+- **Ratings**: 1-5 ijsbolletjes rating systeem
+- **Vegan tag**: Markeer vegan ijsjes
 - **Wishlist**: Smaken die je nog wilt proberen
 - **Badges**: 8 badges om te verdienen
 - **Statistieken**: Aantal check-ins, bezochte zaken, geprobeerde smaken
@@ -23,9 +23,9 @@ Een "Untappd voor IJs" app - houd bij welke smaken je bij welke IJszaak hebt geg
 | 🎯 | Hattrick | 3 check-ins |
 | 💕 | Liefhebber | 10 check-ins |
 | ☀️ | Zomerliefde | 20 check-ins |
-| 🗺️ | Ontdekker | 5 IJszaken bezocht |
+| 🗺️ | Ontdekker | 5 ijszaken bezocht |
 | 👅 | Proever | 10 smaken geprobeerd |
-| 🌱 | Plantaardig | 5 vegan IJsjes |
+| 🌱 | Plantaardig | 5 vegan ijsjes |
 | ⭐ | Superfan | Geef een 5-ster rating |
 
 ## Installeren als app
